@@ -1,0 +1,128 @@
+<head>
+  <title>Winsanity</title>
+</head>
+
+  <template name="index">
+    <div id="fullpage">
+      <div class="section landing-slide">
+        <h1 class="text-center big">Winsanity</h1>
+        <h1 class="text-center med">Its all about the inside</h1>
+        <h1 class="text-center med">jokes you will make.</h1>
+        {{> gamebuttons }}
+      </div>
+    </div>
+  </template>
+
+<template name="gamebuttons">
+  <form class="text-center">
+    <input type="text" class="btn" name="findGame" placeholder="game-number">
+    <button type="submit" class="btn">Submit</button>
+    <button type="button" id="creates" class="btn">Create</button>
+  </form>
+</template>
+
+<template name="game">
+  <div class="landing-slide">
+    <h1 class="text-center big">Game id: {{ids}}</h1>
+      {{#if stname}}
+        {{> createname}}
+      {{else}}
+        {{> roster}}
+      {{/if}}
+      <h1 class="text-center">{{prompt}}</h1>
+
+  </div>
+</template>
+
+<template name="createname">
+  <h1 class="text-center med">Before you go create a name!</h1>
+  <form class="text-center">
+    <input type="text" class="btn" name="playerName" placeholder="name">
+    <button type="submit" class="btn">Submit</button>
+  </form>
+</template>
+
+<template name="roster">
+  <form class="text-center">
+    <button type="submit" id="plays" class="btn">Play!</button>
+  </form>
+  <h1 class="text-center med">Roster</h1>
+  {{#each players}}
+    <h1 class="text-center med">{{player}}</h1>
+  {{/each}}
+</template>
+
+<template name="dashboard">
+  <div class="landing-slide">
+    <div class="row">
+      <div class="col-sm-3">
+        {{> sideroster}}
+      </div>
+      <div class="col-sm-7">
+        {{#if card}}
+          {{> preround}}
+          {{else}}
+            {{> answer}}
+        {{/if}}
+
+      </div>
+      <div class="col-sm-2">
+        <h2>Round:{{round}}/3</h2>
+        {{> scoreboard}}
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="sideroster">
+  <h1 style="font-size:4em;">Game code:</h1>
+  <h1 style="font-size:8em;">{{ids}}</h1>
+  <h1>You: {{user}} </h1>
+  <h2>Roster</h2>
+  {{#each players}}
+  <h2>{{player}}</h2>
+  {{/each}}
+</template>
+
+<template name="preround">
+  <h1 class="text-center">Preround</h1>
+  <h2 class="text-center">Make a fill in a blank statement with this word:</h2>
+  <h3 class="text-center">{{words}}</h3>
+  <form class="text-center">
+    <h2>Use ** to add a fill in a blank.</h2>
+    <input type="text" class="btn" name="sentence" placeholder="sentence">
+    <button type="submit" id="plays" class="btn">Hit it!</button>
+  </form>
+  <form id="nexts" class="text-center">
+    {{#if next}}
+    <button type="button" id="next" class="btn">Next!</button>
+    {{/if}}
+  </form>
+  <h3 class="text-center">{{prom}}</h3>
+</template>
+
+<template name="scoreboard">
+  <h2>Scoreboard</h2>
+  {{#each players}}
+  <h3>{{player}}:{{score}}</h3>
+  {{/each}}
+</template>
+
+<template name="admin">
+  <div class="landing-slide">
+    <h1 class="text-center">Admin</h1>
+    <h1 class="text-center">Add words</h1>
+    <form class="text-center">
+      <input type="text" class="btn" name="word" placeholder="word">
+      <button type="submit" class="btn">Submit</button>
+    </form>
+    {{#each words}}
+    <h4>{{word}}</h4>
+    {{/each}}
+  </div>
+</template>
+
+<template name="answer">
+  <h1 class="text-center">What can go in that blank?</h1>
+  <h1 class="text-center">{{quest}}</h1>
+</template>

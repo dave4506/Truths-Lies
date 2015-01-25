@@ -1,0 +1,39 @@
+/* CSS declarations go here */
+.landing-slide{
+  padding: 15% 0 100% 0;
+  background-color: #DD1E2F;
+  color: white;
+}
+.big{
+  font-size: 12em;
+  padding-bottom: 50px;
+}
+.med{
+  font-size: 3em;
+}
+.small{
+  font-size: 1.5em;
+}
+.btn{
+  border-radius: 5px;
+  background: transparent;
+  min-width:100px;
+  min-height: 40px;
+  font-size: 1.5em;
+  color: white;
+  text-shadow: none;
+  border: 3px solid white;
+}
+.btn:hover{
+  background: white;
+  color: #DD1E2F;
+}
+.sign-slide{
+  background-color: #DD1E2F;
+  color: white;
+}
+#exampleInputPassword1{
+  border: 3px solid white;
+  background-color: #DD1E2F;
+  color: #FFFFFF;
+}
