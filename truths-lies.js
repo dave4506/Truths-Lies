@@ -24,7 +24,11 @@ if (Meteor.isClient) {
     Session.set("round",1);
     Session.set("theword","");
     Session.set("prompt","")
+    Session.set("prompts","")
+    Session.set("nextV",false);
+    Session.set("qindex",0)
     Session.set("next",false)
+    Session.set("nextr",false)
     Session.set("answer",false);
     Session.set("response", "_____");
     console.log("gameid:" + this.params.query.player);
@@ -98,25 +102,166 @@ if (Meteor.isClient) {
     }
 
   });
+  Template.voting.helpers({
+    quest: function(){
+      var name = Session.get("gameid");
+      var str = games.findOne({gameid:name}).questions
+      console.log(str);
+      var i = 0;
+      var re ="default";
+      do{
+        var status = str[i].answered;
+        console.log(status);
+        if(status == false){
+          re= str[i].question
+          Session.set('qindex',i);
+          i = str.length;
+        }
+        else{
+          i++;
+        }
+        console.log("i" + i + "str" + str.length);
+      }while(i<str.length)
+      var s = Session.get("response")
+      re = re.replace("**",s);
+      return re;
+    },
+    as: function(){
+      var name = Session.get("gameid");
+      var obj = games.findOne({gameid:name})
+      var id = games.findOne({gameid:name})._id;
+      var quest = obj.questions;
+      var qq = quest[Session.get("qindex")];
+      var an = qq.ans;
+      return an;
+    },
 
-  Template.answer.helpers({
+     prom: function(){
+       var name = Session.get("gameid");
+       var obj = games.findOne({gameid:name})
+       var id = games.findOne({gameid:name})._id;
+       var quest = obj.questions;
+       var qq = quest[Session.get("qindex")];
+       var an = qq.ans;
+       var counter = 0;
+       for(var i = 0;i<an.length;i++){
+         console.log("values"+an[i].votes);
+         counter += an[i].votes;
+       }
+       console.log(counter + " df");
+       if(counter>=obj.players.length){
+         Session.set("nextr",true);
+         return "Aight! Let's see the results"
+       }
+       return Session.get("prompt");
+     }
+
+  })
+  Template.voting.events({
+    'submit #gg': function(event){
+      event.preventDefault();
+      var playerNameVar = event.target.s.value;
+      var name = Session.get("gameid");
+      var obj = games.findOne({gameid:name})
+      var id = games.findOne({gameid:name})._id;
+      var quest = obj.questions;
+      var qq = quest[Session.get("qindex")];
+      var an = qq.ans;
+      Session.set("prompts","Can't find that! Try something else!")
+      for(var i = 0;i<an.length;i++){
+        if(playerNameVar == an[i].the){
+          var old = an[i].votes
+          old++;
+          console.log("old" + old)
+          var ob = {
+            the: an[i].the,
+            votes: old,
+            user: an[i].user
+          }
+          quest[Session.get(i)]=ob;
+          games.update({_id: id},{gameid:name,players:obj.players,round:obj.round,questions:quest})
+          Session.set("prompts","Great! Wait for others to vote!")
+        }
+      }
+    }
+
+
+  });
+  Template.answr.helpers({
       quest: function(){
         var name = Session.get("gameid");
         var str = games.findOne({gameid:name}).questions
+        console.log(str);
         var i = 0;
-        var re ="";
+        var re ="default";
         do{
           var status = str[i].answered;
+          console.log(status);
           if(status == false){
             re= str[i].question
+            Session.set('qindex',i);
+            i = str.length;
           }
           else{
             i++;
           }
+          console.log("i" + i + "str" + str.length);
         }while(i<str.length)
-        re.replace("**",Session.get("response"));
+        var s = Session.get("response")
+        re = re.replace("**",s);
         return re;
+      },
+      prom: function(){
+        var name = Session.get("gameid");
+        var obj = games.findOne({gameid:name})
+        var id = games.findOne({gameid:name})._id;
+        var quest = obj.questions;
+        var qq = quest[Session.get("qindex")];
+        var an = qq.ans
+        console.log(an);
+        Session.set("nextV",true);
+        if(an.length>=obj.players.length){
+          Session.set("nextV",true);
+          return "Awesome! hit next to go on!"
+        }else{
+          return "Just chill. Wait for the others!"
+        }
+      },
+      next: function(){
+        console.log(Session.get("nextV"))
+        return Session.get("nextV");
       }
+  });
+
+  Template.answr.events({
+    'submit #g': function(event){
+      event.preventDefault();
+      var wordvar = event.target.ans.value;
+      var name = Session.get("gameid");
+      var obj = games.findOne({gameid:name})
+      var id = games.findOne({gameid:name})._id;
+      var quest = obj.questions;
+      console.log(Session.get("qindex"))
+      var qq = quest[Session.get("qindex")];
+      console.log(qq);
+      var an = qq.ans
+      an[an.length] = {
+        the: wordvar,
+        votes: 0,
+        user: Session.get("user")
+        }
+      var q = {
+        question : qq.question,
+        answered : qq.answered,
+        ans:an
+      }
+      console.log(q);
+      quest[Session.get("qindex")]=q;
+
+      games.update({_id: id},{gameid:name,players:obj.players,round:obj.round,questions:quest})
+
+    }
+
   });
 
   Template.roster.events({
@@ -151,6 +296,15 @@ if (Meteor.isClient) {
     },
     card: function(){
       return Session.get("gamestate");
+    },
+    as: function(){
+      var name = Session.get("gameid");
+      var obj = games.findOne({gameid:name})
+      var id = games.findOne({gameid:name})._id;
+      var quest = obj.questions;
+      var qq = quest[Session.get("qindex")];
+      var an = qq.ans;
+      return an;
     }
 
   });
@@ -202,7 +356,8 @@ if (Meteor.isClient) {
           var arr = games.findOne({gameid:name}).questions;
           var ga = {
             question : wordvar,
-            answered : false
+            answered : false,
+            ans:[]
           }
           console.log(arr);
           var obj = games.findOne({gameid:Session.get("gameid")});

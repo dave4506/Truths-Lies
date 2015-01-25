@@ -62,13 +62,10 @@
         {{#if card}}
           {{> preround}}
           {{else}}
-            {{> answer}}
+            {{> answr}}
         {{/if}}
 
-      </div>
-      <div class="col-sm-2">
-        <h2>Round:{{round}}/3</h2>
-        {{> scoreboard}}
+
       </div>
     </div>
   </div>
@@ -122,7 +119,49 @@
   </div>
 </template>
 
-<template name="answer">
-  <h1 class="text-center">What can go in that blank?</h1>
-  <h1 class="text-center">{{quest}}</h1>
+<template name="answr">
+  {{#if next}}
+    {{> voting}}
+  {{else}}
+    <h1 class="text-center">What can go in that blank?</h1>
+    <h1 class="text-center">{{quest}}</h1>
+    <h2 class="text-center">Type in what fits in that blank</h2>
+    <form class="text-center" id="g">
+      <input type="text" class="btn" name="ans" placeholder="word">
+      <button type="submit" class="btn">Submit</button>
+    </form>
+    <h3 class="text-center">{{prom}}</h3>
+    <form id="nexts" class="text-center">
+      {{#if next}}
+      <button type="button" id="nextv" class="btn">Next!</button>
+      {{/if}}
+  </form>
+  {{/if}}
+
+</template>
+
+<template name="voting">
+  {{#if nextv}}
+    <h1 class="text-center">Results!</h1>
+    {{#each as}}
+    <div class="text-center">
+      <h2>{{user}}-{{the}}-{{votes}}</h2>
+    </div>
+    {{/each}}
+
+  {{else}}
+    <h1 class="text-center">Vote for your fav!</h1>
+    <h1 class="text-center">{{quest}}</h1>
+    <h1 class="text-center">Answers:</h1>
+    {{#each as}}
+    <div class="text-center">
+      <h2>{{the}}</h2>
+    </div>
+    {{/each}}
+    <form class="text-center" id="gg">
+      <input type="text" class="btn" name="s" placeholder="word">
+      <button type="submit" class="btn">Submit</button>
+    </form>
+    <h3 class="text-center">{{prom}}</h3>
+  {{/if}}
 </template>
